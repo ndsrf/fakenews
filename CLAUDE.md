@@ -1,5 +1,7 @@
 # Claude Code - Project Guide
 
+AI-powered fictional news article generator with custom templates and analytics.
+
 ## Commands
 
 - **Development**: `npm run dev` (Runs both client and server in watch mode)
