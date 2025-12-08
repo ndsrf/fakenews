@@ -54,17 +54,22 @@ export default function Register() {
     try {
       await register(formData.email, formData.password, formData.name, formData.language);
 
-      // If successfully registered and logged in (first user), navigate to dashboard
-      // Otherwise show success message
-      if (isAuthenticated) {
-        navigate('/dashboard');
-      } else {
-        setSuccess(t('auth.pendingApproval'));
-        setTimeout(() => navigate('/login'), 3000);
-      }
+      // Check if user is now authenticated (first user auto-approved)
+      // We need to wait a moment for the auth state to update
+      setTimeout(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // First user - show success and navigate to dashboard
+          setSuccess('Registration successful!');
+          setTimeout(() => navigate('/dashboard'), 2000);
+        } else {
+          // Subsequent users - show pending approval message
+          setSuccess(t('auth.pendingApproval'));
+          setTimeout(() => navigate('/login'), 3000);
+        }
+      }, 100);
     } catch (err: any) {
       setError(err.message || 'Registration failed');
-    } finally {
       setLoading(false);
     }
   };
@@ -90,10 +95,17 @@ export default function Register() {
 
         {/* Register form card */}
         <div className="bg-white rounded-lg shadow-md p-8">
+          <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            {t('auth.register')}
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name input */}
             <div>
+              <label htmlFor="name" className="sr-only">
+                {t('auth.name')}
+              </label>
               <input
+                id="name"
                 type="text"
                 name="name"
                 value={formData.name}
@@ -106,7 +118,11 @@ export default function Register() {
 
             {/* Email input */}
             <div>
+              <label htmlFor="email" className="sr-only">
+                {t('auth.email')}
+              </label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={formData.email}
@@ -119,7 +135,11 @@ export default function Register() {
 
             {/* Password input */}
             <div>
+              <label htmlFor="password" className="sr-only">
+                {t('auth.password')}
+              </label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 value={formData.password}
@@ -133,7 +153,11 @@ export default function Register() {
 
             {/* Confirm password input */}
             <div>
+              <label htmlFor="confirmPassword" className="sr-only">
+                {t('auth.confirmPassword')}
+              </label>
               <input
+                id="confirmPassword"
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
@@ -146,7 +170,11 @@ export default function Register() {
 
             {/* Language selector */}
             <div>
+              <label htmlFor="language" className="sr-only">
+                {t('common.language')}
+              </label>
               <select
+                id="language"
                 name="language"
                 value={formData.language}
                 onChange={handleChange}

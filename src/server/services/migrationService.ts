@@ -1,11 +1,8 @@
 import { readFileSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import Database from 'better-sqlite3';
 import { readFile } from 'fs/promises';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 interface MigrationFile {
   version: string;

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import prisma from '../config/database.js';
 import { updateUserSchema, updateRoleSchema } from '../utils/validation.js';
@@ -6,7 +6,7 @@ import { updateUserSchema, updateRoleSchema } from '../utils/validation.js';
 /**
  * Get all users (super admin only)
  */
-export async function getAllUsers(req: Request, res: Response): Promise<void> {
+export async function getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -26,14 +26,14 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
 
     res.status(200).json({ users });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Get pending approval users (super admin only)
  */
-export async function getPendingUsers(req: Request, res: Response): Promise<void> {
+export async function getPendingUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const users = await prisma.user.findMany({
       where: {
@@ -54,14 +54,14 @@ export async function getPendingUsers(req: Request, res: Response): Promise<void
 
     res.status(200).json({ users });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Approve a user (super admin only)
  */
-export async function approveUser(req: Request, res: Response): Promise<void> {
+export async function approveUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;
 
@@ -97,14 +97,14 @@ export async function approveUser(req: Request, res: Response): Promise<void> {
       user: updatedUser,
     });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Update user role (super admin only)
  */
-export async function updateUserRole(req: Request, res: Response): Promise<void> {
+export async function updateUserRole(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;
     const validatedData = updateRoleSchema.parse(req.body);
@@ -142,14 +142,14 @@ export async function updateUserRole(req: Request, res: Response): Promise<void>
       user: updatedUser,
     });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Delete/deactivate user (super admin only)
  */
-export async function deleteUser(req: Request, res: Response): Promise<void> {
+export async function deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;
 
@@ -186,14 +186,14 @@ export async function deleteUser(req: Request, res: Response): Promise<void> {
 
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Update current user's profile
  */
-export async function updateProfile(req: Request, res: Response): Promise<void> {
+export async function updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     if (!req.user) {
       res.status(401).json({ error: 'Authentication required' });
@@ -235,6 +235,6 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
       user: updatedUser,
     });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }

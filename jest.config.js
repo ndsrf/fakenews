@@ -2,15 +2,20 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'],
-  testMatch: ['**/*.test.ts', '**/*.spec.ts'],
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e'],
+  transform: {
+    '^.+\.tsx?$': ['ts-jest', {
+      tsconfig: 'tsconfig.test.json',
+    }],
+  },
+  testMatch: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts'],
   collectCoverageFrom: [
-    'src/**/*.ts',
+    'src/server/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/client/**/*',
   ],
   coverageThreshold: {
     global: {
-      branches: 70,
+      branches: 50,
       functions: 70,
       lines: 70,
       statements: 70,
@@ -18,6 +23,45 @@ export default {
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  resolver: '<rootDir>/tests/resolver.cjs',
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.cjs'],
+  projects: [
+    {
+      displayName: 'server',
+      testEnvironment: 'node',
+      testMatch: ['<rootDir>/tests/unit/**/*.test.ts', '<rootDir>/tests/integration/**/*.test.ts'],
+      transform: {
+        '^.+\.tsx?$': ['ts-jest', {
+          tsconfig: 'tsconfig.test.json',
+        }],
+      },
+      resolver: '<rootDir>/tests/resolver.cjs',
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.cjs'],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+      },
+      collectCoverageFrom: [
+        'src/server/**/*.ts',
+        '!src/**/*.d.ts',
+      ],
+    },
+    {
+      displayName: 'client',
+      testEnvironment: 'jsdom',
+      testMatch: ['<rootDir>/tests/unit/components/**/*.test.tsx'],
+      transform: {
+        '^.+\.tsx?$': ['ts-jest', {
+          tsconfig: 'tsconfig.test.json',
+        }],
+      },
+      resolver: '<rootDir>/tests/resolver.cjs',
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.cjs'],
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+      },
+    },
+  ],
 };

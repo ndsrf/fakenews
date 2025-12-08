@@ -11,6 +11,7 @@ export function errorHandler(
   next: NextFunction
 ): void {
   console.error('Error:', error);
+  console.log('Is ZodError?', error instanceof ZodError);
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {

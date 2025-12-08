@@ -63,10 +63,17 @@ export default function Login() {
 
         {/* Login form card */}
         <div className="bg-white rounded-lg shadow-md p-8">
+          <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            {t('auth.login')}
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email input */}
             <div>
+              <label htmlFor="email" className="sr-only">
+                {t('auth.email')}
+              </label>
               <input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +85,11 @@ export default function Login() {
 
             {/* Password input */}
             <div>
+              <label htmlFor="password" className="sr-only">
+                {t('auth.password')}
+              </label>
               <input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

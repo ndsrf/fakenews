@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import prisma from '../config/database.js';
 import { generateToken } from '../utils/jwt.js';
@@ -8,7 +8,7 @@ import { registerSchema, loginSchema } from '../utils/validation.js';
  * Register a new user
  * First user automatically becomes super_admin
  */
-export async function register(req: Request, res: Response): Promise<void> {
+export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     // Validate input
     const validatedData = registerSchema.parse(req.body);
@@ -73,14 +73,14 @@ export async function register(req: Request, res: Response): Promise<void> {
       user,
     });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Login user
  */
-export async function login(req: Request, res: Response): Promise<void> {
+export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     // Validate input
     const validatedData = loginSchema.parse(req.body);
@@ -128,14 +128,14 @@ export async function login(req: Request, res: Response): Promise<void> {
       token,
     });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 
 /**
  * Get current user information
  */
-export async function getCurrentUser(req: Request, res: Response): Promise<void> {
+export async function getCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     if (!req.user) {
       res.status(401).json({ error: 'Authentication required' });
@@ -163,7 +163,7 @@ export async function getCurrentUser(req: Request, res: Response): Promise<void>
 
     res.status(200).json({ user });
   } catch (error) {
-    throw error;
+    next(error);
   }
 }
 

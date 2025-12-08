@@ -1,0 +1,200 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  check-version:
+    name: Check Version Type
+    runs-on: ubuntu-latest
+    outputs:
+      is_patch: ${{ steps.version_check.outputs.is_patch }}
+    steps:
+      - name: Check if patch release
+        id: version_check
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          # Check if this is a patch release (x.y.Z where Z > 0)
+          if [[ $TAG =~ ^[0-9]+\.[0-9]+\.[1-9][0-9]*$ ]]; then
+            echo "is_patch=true" >> $GITHUB_OUTPUT
+            echo "This is a patch release - tests will be skipped"
+          else
+            echo "is_patch=false" >> $GITHUB_OUTPUT
+            echo "This is a major/minor release - tests will run"
+          fi
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.is_patch == 'false'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            coverage/
+            test-results/
+            playwright-report/
+          retention-days: 30
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [check-version, test]
+    if: always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Create CHANGELOG.md if it doesn't exist
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          fi
+
+          # Add new version entry to changelog
+          VERSION=${{ steps.version.outputs.tag }}
+          DATE=$(date +%Y-%m-%d)
+
+          # Create temp file with new entry
+          {
+            echo "# Changelog"
+            echo ""
+            echo "## [$VERSION] - $DATE"
+            echo ""
+            git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")..HEAD 2>/dev/null || echo "- Release $VERSION"
+            echo ""
+            echo ""
+            tail -n +2 CHANGELOG.md
+          } > CHANGELOG.md.tmp
+
+          mv CHANGELOG.md.tmp CHANGELOG.md
+
+          # Extract the latest release notes
+          CHANGELOG=$(awk '/^## \[/{if(++count==2)exit}count==1' CHANGELOG.md | tail -n +2)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit updated files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          # Fetch latest main branch
+          git fetch origin main
+
+          # Checkout main branch (exit detached HEAD state)
+          git checkout main
+
+          # Pull latest changes
+          git pull origin main
+
+          # Add and commit updated files
+          git add CHANGELOG.md
+
+          # Only commit if there are changes
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update changelog for ${{ steps.version.outputs.tag }}"
+            git push origin main
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.version.outputs.tag }}
+          body: |
+            ## Fictional News Generator ${{ steps.version.outputs.tag }}
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ---
+
+            ### 📦 Docker Images
+
+            Docker images for this release are available at:
+            ```
+            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+            ```
+
+            The Docker build workflow also creates additional semantic version tags (e.g., `1.1`, `1`) automatically.
+
+            ### 🚀 Quick Start
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            docker run -p 3000:3000 ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+            ```
+
+            ### 📝 Full Changelog
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for complete details.
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Announce release
+        run: |
+          echo "✅ Release ${{ steps.version.outputs.tag }} created successfully!"
+          echo "🐳 Docker images will be built by the docker-build workflow"
+          echo "📦 Available at: ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}"
