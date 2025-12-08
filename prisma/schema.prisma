@@ -1,0 +1,122 @@
+// Prisma schema for Fictional News Generator
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AppVersion {
+  id            String    @id @default(uuid())
+  version       String    @unique
+  appliedAt     DateTime  @default(now())
+  description   String
+  migrations    String    // JSON array of migration file names
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String    // bcrypt hashed
+  name          String
+  role          String    // 'super_admin' | 'admin' | 'user'
+  isApproved    Boolean   @default(false)
+  language      String    @default("en")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  articles      Article[]
+}
+
+model NewsBrand {
+  id            String    @id @default(uuid())
+  name          String
+  tagline       String?
+  description   String
+  logoUrl       String?
+  logoVariations String?  // JSON
+  logoMetadata  String?   // JSON
+  primaryColor  String    @default("#1a1a1a")
+  accentColor   String    @default("#0066cc")
+  language      String    @default("en")
+  websiteUrl    String
+  categories    String    // JSON array
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  articles      Article[]
+  templates     Template[]
+}
+
+model Article {
+  id              String    @id @default(uuid())
+  title           String
+  subtitle        String?
+  content         String
+  excerpt         String
+  language        String
+  category        String
+  templateId      String
+  template        Template  @relation(fields: [templateId], references: [id])
+  brandId         String
+  brand           NewsBrand @relation(fields: [brandId], references: [id])
+  authorId        String
+  author          User      @relation(fields: [authorId], references: [id])
+  authorName      String
+  slug            String    @unique
+  metadata        String    // JSON
+  images          String    // JSON
+  charts          String    // JSON
+  relatedArticles String    // JSON
+  status          String    @default("draft")
+  publishedAt     DateTime?
+  featuredImage   String?
+  readTime        Int?
+  tags            String    // JSON
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  pageViews       PageView[]
+}
+
+model Template {
+  id                String    @id @default(uuid())
+  name              String
+  type              String
+  brandId           String?
+  brand             NewsBrand? @relation(fields: [brandId], references: [id])
+  cssStyles         String
+  htmlStructure     String
+  hasSidebar        Boolean   @default(true)
+  language          String    @default("en")
+  isActive          Boolean   @default(true)
+  previewImage      String?
+  sourceUrl         String?
+  extractionMethod  String?
+  layoutMetadata    String?   // JSON
+  createdAt         DateTime  @default(now())
+  articles          Article[]
+}
+
+model PageView {
+  id            String    @id @default(uuid())
+  articleId     String
+  article       Article   @relation(fields: [articleId], references: [id])
+  ipAddress     String    // Anonymized/hashed
+  country       String?
+  city          String?
+  browser       String?
+  os            String?
+  device        String?
+  referrer      String?
+  timestamp     DateTime  @default(now())
+}
+
+model AIConfig {
+  id            String    @id @default(uuid())
+  provider      String    @unique
+  apiKey        String
+  model         String
+  isActive      Boolean   @default(true)
+  updatedAt     DateTime  @updatedAt
+}

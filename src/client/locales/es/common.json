@@ -1,0 +1,46 @@
+{
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "confirmPassword": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "registerSuccess": "Registro exitoso",
+    "pendingApproval": "Tu cuenta está pendiente de aprobación",
+    "firstUserAdmin": "Primer usuario registrado como super administrador"
+  },
+  "users": {
+    "title": "Gestión de Usuarios",
+    "allUsers": "Todos los Usuarios",
+    "pendingUsers": "Aprobaciones Pendientes",
+    "approve": "Aprobar",
+    "delete": "Eliminar",
+    "changeRole": "Cambiar Rol",
+    "role": {
+      "super_admin": "Super Administrador",
+      "admin": "Administrador",
+      "user": "Usuario"
+    },
+    "approved": "Aprobado",
+    "pending": "Pendiente"
+  },
+  "common": {
+    "version": "Versión",
+    "language": "Idioma",
+    "en": "Inglés",
+    "es": "Español",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  }
+}

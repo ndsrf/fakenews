@@ -1,0 +1,46 @@
+{
+  "auth": {
+    "login": "Log In",
+    "register": "Register",
+    "logout": "Log Out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful",
+    "pendingApproval": "Your account is pending approval",
+    "firstUserAdmin": "First user registered as super admin"
+  },
+  "users": {
+    "title": "User Management",
+    "allUsers": "All Users",
+    "pendingUsers": "Pending Approvals",
+    "approve": "Approve",
+    "delete": "Delete",
+    "changeRole": "Change Role",
+    "role": {
+      "super_admin": "Super Admin",
+      "admin": "Admin",
+      "user": "User"
+    },
+    "approved": "Approved",
+    "pending": "Pending"
+  },
+  "common": {
+    "version": "Version",
+    "language": "Language",
+    "en": "English",
+    "es": "Spanish",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
