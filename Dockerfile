@@ -53,9 +53,6 @@ RUN npx prisma generate
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy any static assets if needed
-COPY --from=builder /app/public ./public 2>/dev/null || true
-
 # Expose port
 EXPOSE 3000
 
