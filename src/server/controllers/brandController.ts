@@ -21,6 +21,8 @@ const updateBrandSchema = z.object({
   tagline: z.string().optional(),
   description: z.string().optional(),
   logoUrl: z.string().optional(),
+  logoVariations: z.any().optional(),
+  logoMetadata: z.any().optional(),
   primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   language: z.enum(['en', 'es']).optional(),
@@ -34,7 +36,9 @@ const generateLogoSchema = z.object({
   style: z.enum(['modern', 'classic', 'minimalist', 'vintage', 'tech', 'editorial']),
   primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
   accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  aiProvider: z.enum(['openai', 'anthropic', 'gemini']),
+  aiProvider: z.enum(['openai', 'anthropic', 'gemini'], {
+    required_error: 'AI provider must be specified (openai, anthropic, or gemini)',
+  }),
   useAI: z.boolean().default(false),
 });
 

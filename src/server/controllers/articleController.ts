@@ -7,7 +7,7 @@ import { z } from 'zod';
 const slugify = slugifyLib.default || slugifyLib;
 
 const generateArticleSchema = z.object({
-  brandId: z.string().uuid(),
+  brandId: z.string().min(1),
   topic: z.string().min(1),
   tone: z.enum(['serious', 'satirical', 'dramatic', 'investigative']),
   length: z.enum(['short', 'medium', 'long']),
@@ -18,7 +18,7 @@ const generateArticleSchema = z.object({
   generateRelatedTitles: z.number().int().min(3).max(5).default(3),
   language: z.enum(['en', 'es']).default('en'),
   aiProvider: z.enum(['openai', 'anthropic', 'gemini']),
-  templateId: z.string().uuid(),
+  templateId: z.string().min(1),
 });
 
 const createArticleSchema = z.object({
@@ -28,8 +28,8 @@ const createArticleSchema = z.object({
   excerpt: z.string().min(1),
   language: z.enum(['en', 'es']),
   category: z.string().min(1),
-  templateId: z.string().uuid(),
-  brandId: z.string().uuid(),
+  templateId: z.string().min(1),
+  brandId: z.string().min(1),
   authorName: z.string().min(1),
   featuredImage: z.string().optional(),
   tags: z.array(z.string()).default([]),
@@ -94,9 +94,9 @@ export class ArticleController {
           excerpt: generatedArticle.excerpt,
           language: validatedData.language,
           category: validatedData.category,
-          templateId: validatedData.templateId,
-          brandId: validatedData.brandId,
-          authorId: user.id,
+          template: { connect: { id: validatedData.templateId } },
+          brand: { connect: { id: validatedData.brandId } },
+          author: { connect: { id: user.userId } },
           authorName: generatedArticle.authorName,
           slug: uniqueSlug,
           metadata: JSON.stringify({
@@ -117,10 +117,10 @@ export class ArticleController {
 
       res.json(article);
     } catch (error) {
-      console.error('Error generating article:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Invalid input', details: error.errors });
       }
+      console.error('Error generating article:', error);
       res.status(500).json({ error: 'Failed to generate article' });
     }
   }
@@ -147,7 +147,7 @@ export class ArticleController {
           category: validatedData.category,
           templateId: validatedData.templateId,
           brandId: validatedData.brandId,
-          authorId: user.id,
+          authorId: user.userId,
           authorName: validatedData.authorName,
           slug: uniqueSlug,
           metadata: JSON.stringify({}),
@@ -162,10 +162,10 @@ export class ArticleController {
 
       res.status(201).json(article);
     } catch (error) {
-      console.error('Error creating article:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Invalid input', details: error.errors });
       }
+      console.error('Error creating article:', error);
       res.status(500).json({ error: 'Failed to create article' });
     }
   }
@@ -277,7 +277,7 @@ export class ArticleController {
         return res.status(404).json({ error: 'Article not found' });
       }
 
-      if (article.authorId !== user.id && user.role !== 'super_admin' && user.role !== 'admin') {
+      if (article.authorId !== user.userId && user.role !== 'super_admin' && user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized' });
       }
 
@@ -309,10 +309,10 @@ export class ArticleController {
 
       res.json(updatedArticle);
     } catch (error) {
-      console.error('Error updating article:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Invalid input', details: error.errors });
       }
+      console.error('Error updating article:', error);
       res.status(500).json({ error: 'Failed to update article' });
     }
   }
@@ -330,7 +330,7 @@ export class ArticleController {
         return res.status(404).json({ error: 'Article not found' });
       }
 
-      if (article.authorId !== user.id && user.role !== 'super_admin' && user.role !== 'admin') {
+      if (article.authorId !== user.userId && user.role !== 'super_admin' && user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized' });
       }
 
@@ -358,7 +358,7 @@ export class ArticleController {
         return res.status(404).json({ error: 'Article not found' });
       }
 
-      if (article.authorId !== user.id && user.role !== 'super_admin' && user.role !== 'admin') {
+      if (article.authorId !== user.userId && user.role !== 'super_admin' && user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized' });
       }
 
@@ -374,6 +374,39 @@ export class ArticleController {
     } catch (error) {
       console.error('Error publishing article:', error);
       res.status(500).json({ error: 'Failed to publish article' });
+    }
+  }
+
+  static async getArticleBySlug(req: Request, res: Response) {
+    try {
+      const { slug } = req.params;
+
+      const article = await db.article.findFirst({
+        where: {
+          slug,
+          status: 'published'
+        },
+        include: {
+          brand: true,
+          template: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      if (!article) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+
+      res.json(article);
+    } catch (error) {
+      console.error('Error getting article by slug:', error);
+      res.status(500).json({ error: 'Failed to get article' });
     }
   }
 }

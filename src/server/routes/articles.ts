@@ -4,6 +4,10 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
 
+// Public routes (no auth required)
+router.get('/slug/:slug', ArticleController.getArticleBySlug);
+
+// Protected routes
 router.post('/generate', authMiddleware, ArticleController.generateArticle);
 router.post('/', authMiddleware, ArticleController.createArticle);
 router.get('/', authMiddleware, ArticleController.listArticles);

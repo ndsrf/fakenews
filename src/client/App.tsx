@@ -5,6 +5,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import Brands from './pages/Brands';
+import Templates from './pages/Templates';
+import Articles from './pages/Articles';
+import CreateArticle from './pages/CreateArticle';
+import EditArticle from './pages/EditArticle';
+import ArticleView from './pages/ArticleView';
 
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -67,14 +73,55 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/brands"
+        element={
+          <ProtectedRoute>
+            <Brands />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/templates"
+        element={
+          <ProtectedRoute>
+            <Templates />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/articles"
+        element={
+          <ProtectedRoute>
+            <Articles />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/articles/create"
+        element={
+          <ProtectedRoute>
+            <CreateArticle />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/articles/edit/:id"
+        element={
+          <ProtectedRoute>
+            <EditArticle />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/:slug" element={<ArticleView />} />
     </Routes>
   );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>

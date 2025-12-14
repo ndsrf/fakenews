@@ -35,7 +35,7 @@ describe('ArticleController', () => {
   let json: jest.Mock;
   let status: jest.Mock;
 
-  const mockUser = { id: 'user-123', role: 'user', email: 'test@example.com' };
+  const mockUser = { id: 'user-123', userId: 'user-123', role: 'user', email: 'test@example.com' };
 
   beforeEach(() => {
     json = jest.fn();
