@@ -13,7 +13,7 @@ const router = Router();
  */
 
 // Global analytics overview (super admin only)
-router.get('/overview', authMiddleware, apiRateLimiter, AnalyticsController.getOverview);
+router.get('/overview', authMiddleware, requireSuperAdmin, apiRateLimiter, AnalyticsController.getOverview);
 
 // Individual analytics endpoints (authenticated users)
 router.get('/views-over-time', authMiddleware, apiRateLimiter, AnalyticsController.getViewsOverTime);

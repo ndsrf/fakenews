@@ -48,8 +48,18 @@ export class AnalyticsController {
 
       // Get global stats
       const stats = await AnalyticsService.getGlobalStats(filters);
+      const viewsOverTime = await AnalyticsService.getViewsOverTime(filters);
+      const deviceBreakdown = await AnalyticsService.getDeviceBreakdown(filters);
+      const geographicDistribution = await AnalyticsService.getGeographicDistribution(filters);
+      const topArticles = await AnalyticsService.getTopArticles({ ...filters, limit: 10 });
 
-      res.json(stats);
+      res.json({
+        stats,
+        viewsOverTime,
+        deviceBreakdown,
+        geographicDistribution,
+        topArticles,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: 'Invalid query parameters', details: error.errors });
