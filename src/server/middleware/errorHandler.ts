@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+import logger from '../config/logger.js';
 
 /**
  * Global error handling middleware
@@ -10,8 +11,13 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ): void {
-  console.error('Error:', error);
-  console.log('Is ZodError?', error instanceof ZodError);
+  logger.error('Error occurred', {
+    message: error.message,
+    stack: error.stack,
+    path: req.path,
+    method: req.method,
+    isZodError: error instanceof ZodError,
+  });
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {

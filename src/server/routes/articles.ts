@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ArticleController } from '../controllers/articleController.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { aiGenerationRateLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
@@ -8,7 +9,7 @@ const router = Router();
 router.get('/slug/:slug', ArticleController.getArticleBySlug);
 
 // Protected routes
-router.post('/generate', authMiddleware, ArticleController.generateArticle);
+router.post('/generate', authMiddleware, aiGenerationRateLimiter, ArticleController.generateArticle);
 router.post('/', authMiddleware, ArticleController.createArticle);
 router.get('/', authMiddleware, ArticleController.listArticles);
 router.get('/:id', authMiddleware, ArticleController.getArticle);

@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/newspaper-article-layout/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-23T10:30:11.371Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766485811366_nzcxow0tg",
+      "approvalTitle": "Tasks Document - Newspaper Article Layout"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-23T10:38:01.799Z",
+      "trigger": "approved",
+      "approvalId": "approval_1766485811366_nzcxow0tg",
+      "approvalTitle": "Tasks Document - Newspaper Article Layout"
+    }
+  ]
+}

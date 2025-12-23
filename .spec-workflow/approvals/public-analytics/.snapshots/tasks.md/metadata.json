@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/public-analytics/tasks.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-14T13:27:46.123Z",
+      "trigger": "initial",
+      "approvalId": "approval_1765718866119_s8p92gr6l",
+      "approvalTitle": "Tasks: Public Display, Analytics & Production (Phase 3)"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-14T13:40:55.044Z",
+      "trigger": "approved",
+      "approvalId": "approval_1765718866119_s8p92gr6l",
+      "approvalTitle": "Tasks: Public Display, Analytics & Production (Phase 3)"
+    }
+  ]
+}

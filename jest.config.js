@@ -24,6 +24,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^marked$': '<rootDir>/tests/mocks/marked.cjs',
   },
   resolver: '<rootDir>/tests/resolver.cjs',
   setupFilesAfterEnv: ['<rootDir>/tests/setup.cjs'],
@@ -41,6 +42,7 @@ export default {
       setupFilesAfterEnv: ['<rootDir>/tests/setup.cjs'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
+        '^marked$': '<rootDir>/tests/mocks/marked.cjs',
       },
       collectCoverageFrom: [
         'src/server/**/*.ts',

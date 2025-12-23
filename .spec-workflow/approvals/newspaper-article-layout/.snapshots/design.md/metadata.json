@@ -1,0 +1,22 @@
+{
+  "filePath": ".spec-workflow/specs/newspaper-article-layout/design.md",
+  "currentVersion": 2,
+  "snapshots": [
+    {
+      "version": 1,
+      "filename": "snapshot-001.json",
+      "timestamp": "2025-12-23T10:23:42.518Z",
+      "trigger": "initial",
+      "approvalId": "approval_1766485422513_0zs5r4coa",
+      "approvalTitle": "Design Document - Newspaper Article Layout"
+    },
+    {
+      "version": 2,
+      "filename": "snapshot-002.json",
+      "timestamp": "2025-12-23T10:26:23.518Z",
+      "trigger": "approved",
+      "approvalId": "approval_1766485422513_0zs5r4coa",
+      "approvalTitle": "Design Document - Newspaper Article Layout"
+    }
+  ]
+}

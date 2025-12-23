@@ -42,5 +42,50 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "overview": "Overview",
+    "totalViews": "Total Views",
+    "totalArticles": "Total Articles",
+    "totalBrands": "Total Brands",
+    "viewsOverTime": "Views Over Time",
+    "deviceBreakdown": "Device Breakdown",
+    "geographicDistribution": "Geographic Distribution",
+    "topArticles": "Top Articles",
+    "export": "Export CSV",
+    "views": "Views",
+    "noArticles": "No articles to display",
+    "loginRequired": "Please log in to view analytics",
+    "filters": {
+      "title": "Filters",
+      "dateRange": "Date Range",
+      "brand": "Brand",
+      "article": "Article",
+      "apply": "Apply Filters",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "allBrands": "All Brands",
+      "allArticles": "All Articles"
+    },
+    "table": {
+      "title": "Title",
+      "brand": "Brand",
+      "views": "Views",
+      "lastViewed": "Last Viewed"
+    },
+    "noData": "No data available"
+  },
+  "disclaimer": {
+    "banner": "⚠️ FICTIONAL CONTENT - This article is entirely fictional",
+    "footer": {
+      "title": "Disclaimer",
+      "content": "This article is entirely fictional and created for entertainment purposes only. All names, characters, events, and locations are products of imagination. Any resemblance to actual persons, living or dead, or actual events is purely coincidental."
+    }
+  },
+  "public": {
+    "notFound": "Article not found",
+    "readTime": "min read",
+    "relatedArticles": "Related Articles"
   }
 }

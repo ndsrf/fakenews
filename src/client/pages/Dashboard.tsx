@@ -22,6 +22,20 @@ export default function Dashboard() {
             Fictional News Generator
           </h1>
           <div className="flex items-center gap-4">
+            <Link to="/articles" className="text-gray-600 hover:text-gray-900">
+              Articles
+            </Link>
+            <Link to="/brands" className="text-gray-600 hover:text-gray-900">
+              Brands
+            </Link>
+            <Link to="/templates" className="text-gray-600 hover:text-gray-900">
+              Templates
+            </Link>
+            {isSuperAdmin && (
+              <Link to="/analytics" className="text-gray-600 hover:text-gray-900">
+                Analytics
+              </Link>
+            )}
             <span className="text-gray-700">{user?.name}</span>
             <button
               onClick={handleLogout}
@@ -75,6 +89,16 @@ export default function Dashboard() {
                 <div className="font-semibold">Templates</div>
                 <div className="text-sm opacity-90">Extract layouts</div>
               </Link>
+              {isSuperAdmin && (
+                <Link
+                  to="/analytics"
+                  className="block bg-indigo-600 text-white p-4 rounded-md hover:bg-indigo-700 transition-colors text-center"
+                >
+                  <div className="text-2xl mb-2">📊</div>
+                  <div className="font-semibold">{t('analytics.title')}</div>
+                  <div className="text-sm opacity-90">View analytics</div>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -90,11 +114,11 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-sm text-green-800 font-semibold mb-1">Phase 2 Complete!</p>
-            <p className="text-sm text-green-800">
-              Authentication, user management, article generation, templates, and brands are now functional.
-              Phase 3 features (public display, analytics) coming soon.
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-800 font-semibold mb-1">Phase 3 Implemented!</p>
+            <p className="text-sm text-blue-800">
+              Public article viewing with disclaimers, analytics tracking, and basic reporting are now available.
+              Full dashboard and production features are in progress.
             </p>
           </div>
         </div>

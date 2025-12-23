@@ -42,5 +42,50 @@
     "loading": "Cargando...",
     "error": "Error",
     "success": "Éxito"
+  },
+  "analytics": {
+    "title": "Analíticas",
+    "overview": "Resumen",
+    "totalViews": "Visitas Totales",
+    "totalArticles": "Artículos Totales",
+    "totalBrands": "Marcas Totales",
+    "viewsOverTime": "Visitas a lo Largo del Tiempo",
+    "deviceBreakdown": "Distribución por Dispositivo",
+    "geographicDistribution": "Distribución Geográfica",
+    "topArticles": "Artículos Principales",
+    "export": "Exportar CSV",
+    "views": "Visitas",
+    "noArticles": "No hay artículos para mostrar",
+    "loginRequired": "Por favor inicia sesión para ver analíticas",
+    "filters": {
+      "title": "Filtros",
+      "dateRange": "Rango de Fechas",
+      "brand": "Marca",
+      "article": "Artículo",
+      "apply": "Aplicar Filtros",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "allBrands": "Todas las Marcas",
+      "allArticles": "Todos los Artículos"
+    },
+    "table": {
+      "title": "Título",
+      "brand": "Marca",
+      "views": "Visitas",
+      "lastViewed": "Última Vista"
+    },
+    "noData": "No hay datos disponibles"
+  },
+  "disclaimer": {
+    "banner": "⚠️ CONTENIDO FICTICIO - Este artículo es completamente ficticio",
+    "footer": {
+      "title": "Descargo de Responsabilidad",
+      "content": "Este artículo es completamente ficticio y creado solo con fines de entretenimiento. Todos los nombres, personajes, eventos y ubicaciones son productos de la imaginación. Cualquier parecido con personas reales, vivas o muertas, o eventos reales es pura coincidencia."
+    }
+  },
+  "public": {
+    "notFound": "Artículo no encontrado",
+    "readTime": "min de lectura",
+    "relatedArticles": "Artículos Relacionados"
   }
 }

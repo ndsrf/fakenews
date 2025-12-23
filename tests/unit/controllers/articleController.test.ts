@@ -212,6 +212,20 @@ describe('ArticleController', () => {
       expect(res.json).toHaveBeenCalled();
     });
 
+    it('should update article with null fields', async () => {
+      req.params = { id: 'article-123' };
+      req.body = { subtitle: null, featuredImage: null };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'user-123' });
+      (db.article.update as jest.Mock).mockResolvedValue({ id: 'article-123', subtitle: null, featuredImage: null });
+
+      await ArticleController.updateArticle(req as Request, res as Response);
+
+      expect(db.article.update).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ subtitle: null, featuredImage: null })
+      }));
+      expect(res.json).toHaveBeenCalled();
+    });
+
     it('should return 403 if unauthorized', async () => {
       req.params = { id: 'article-123' };
       req.body = updateBody;

@@ -2,27 +2,35 @@ import { Request, Response, NextFunction } from 'express';
 import { ZodError, ZodIssue } from 'zod';
 import { errorHandler } from '../../../src/server/middleware/errorHandler';
 
+// Mock the logger
+jest.mock('../../../src/server/config/logger', () => ({
+  __esModule: true,
+  default: {
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
+import logger from '../../../src/server/config/logger';
+
 describe('errorHandler middleware', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: NextFunction;
-  let consoleErrorSpy: jest.SpyInstance;
-  let consoleLogSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    mockRequest = {};
+    mockRequest = {
+      path: '/test',
+      method: 'GET',
+    };
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
     };
     mockNext = jest.fn();
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-  });
-
-  afterEach(() => {
-    consoleErrorSpy.mockRestore();
-    consoleLogSpy.mockRestore();
+    jest.clearAllMocks();
   });
 
   describe('ZodError handling', () => {
@@ -69,7 +77,7 @@ describe('errorHandler middleware', () => {
           },
         ],
       });
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error:', zodError);
+      expect(logger.error).toHaveBeenCalled();
     });
 
     it('should handle ZodError with nested path', () => {
@@ -261,7 +269,7 @@ describe('errorHandler middleware', () => {
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Error:', error);
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

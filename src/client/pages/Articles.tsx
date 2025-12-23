@@ -121,6 +121,11 @@ export default function Articles() {
             <Link to="/templates" className="text-gray-600 hover:text-gray-900">
               Templates
             </Link>
+            {isSuperAdmin && (
+              <Link to="/analytics" className="text-gray-600 hover:text-gray-900">
+                Analytics
+              </Link>
+            )}
             <span className="text-gray-700">{user?.name}</span>
             <button
               onClick={handleLogout}

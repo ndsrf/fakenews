@@ -1,0 +1,212 @@
+/**
+ * Newspaper Layout Base Styles
+ * Provides foundational CSS for professional newspaper article presentation
+ * Low specificity allows template overrides
+ */
+
+/* Typography Base */
+.newspaper-article {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: #1a1a1a;
+}
+
+.newspaper-article h1,
+.newspaper-article h2,
+.newspaper-article h3,
+.newspaper-article h4,
+.newspaper-article h5,
+.newspaper-article h6 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #000;
+}
+
+/* Column Layout Utilities */
+.newspaper-columns {
+  column-gap: 2rem;
+}
+
+.newspaper-columns-1 {
+  column-count: 1;
+}
+
+.newspaper-columns-2 {
+  column-count: 2;
+}
+
+.newspaper-columns-3 {
+  column-count: 3;
+}
+
+/* Prevent column breaks inside elements */
+.newspaper-columns p,
+.newspaper-columns blockquote,
+.newspaper-columns figure {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Drop Cap Base */
+.drop-cap::first-letter {
+  float: left;
+  font-size: 3.5rem;
+  line-height: 0.85;
+  font-weight: 700;
+  margin-right: 0.125rem;
+  margin-top: 0.1rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Pull Quote Base */
+.pull-quote {
+  position: relative;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  font-style: italic;
+  border-left: 4px solid #333;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.pull-quote::before {
+  content: '\201C';
+  position: absolute;
+  top: -0.25rem;
+  left: 0.5rem;
+  font-size: 4rem;
+  line-height: 1;
+  opacity: 0.15;
+  font-style: normal;
+}
+
+.pull-quote-attribution {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-style: normal;
+  text-align: right;
+  opacity: 0.75;
+}
+
+/* Image Caption Base */
+.image-caption {
+  margin: 1.5rem 0;
+}
+
+.image-caption img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-caption figcaption {
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-style: italic;
+  color: #555;
+}
+
+.image-caption-credit {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #888;
+}
+
+/* Responsive Typography */
+@media (max-width: 767px) {
+  /* Mobile */
+  .newspaper-article {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .drop-cap::first-letter {
+    font-size: 3rem;
+  }
+
+  .pull-quote {
+    font-size: 1.125rem;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet */
+  .newspaper-columns-2 {
+    column-count: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop - columns enabled */
+  .newspaper-columns-responsive {
+    column-count: 2;
+    column-gap: 2rem;
+  }
+}
+
+/* Full-width elements break columns */
+.column-break {
+  column-span: all;
+  break-after: column;
+}
+
+/* Article Header Base */
+.article-header {
+  margin-bottom: 2rem;
+}
+
+.article-byline {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.75rem;
+}
+
+/* Related Articles Base */
+.related-articles {
+  margin-top: 2rem;
+}
+
+.related-article-card {
+  display: block;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.25rem;
+  transition: box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.related-article-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.related-article-thumbnail {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+/* Print Styles */
+@media print {
+  .newspaper-article {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  .newspaper-columns-2 {
+    column-count: 2;
+  }
+
+  .pull-quote {
+    page-break-inside: avoid;
+  }
+}

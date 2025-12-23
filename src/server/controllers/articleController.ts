@@ -23,7 +23,7 @@ const generateArticleSchema = z.object({
 
 const createArticleSchema = z.object({
   title: z.string().min(1),
-  subtitle: z.string().optional(),
+  subtitle: z.string().nullish(),
   content: z.string().min(1),
   excerpt: z.string().min(1),
   language: z.enum(['en', 'es']),
@@ -31,19 +31,20 @@ const createArticleSchema = z.object({
   templateId: z.string().min(1),
   brandId: z.string().min(1),
   authorName: z.string().min(1),
-  featuredImage: z.string().optional(),
+  featuredImage: z.string().nullish(),
+  readTime: z.number().int().positive().nullish(),
   tags: z.array(z.string()).default([]),
   relatedArticles: z.array(z.any()).default([]),
 });
 
 const updateArticleSchema = z.object({
   title: z.string().optional(),
-  subtitle: z.string().optional(),
+  subtitle: z.string().nullish(),
   content: z.string().optional(),
   excerpt: z.string().optional(),
   category: z.string().optional(),
   authorName: z.string().optional(),
-  featuredImage: z.string().optional(),
+  featuredImage: z.string().nullish(),
   tags: z.array(z.string()).optional(),
   status: z.enum(['draft', 'published']).optional(),
 });
@@ -155,6 +156,7 @@ export class ArticleController {
           charts: JSON.stringify([]),
           relatedArticles: JSON.stringify(validatedData.relatedArticles),
           featuredImage: validatedData.featuredImage,
+          readTime: validatedData.readTime,
           tags: JSON.stringify(validatedData.tags),
           status: 'draft',
         },
