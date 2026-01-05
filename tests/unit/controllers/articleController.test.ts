@@ -124,6 +124,18 @@ describe('ArticleController', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(json).toHaveBeenCalledWith(expect.objectContaining({ error: 'Invalid input' }));
     });
+
+    it('should handle service errors', async () => {
+      req.body = validBody;
+      (db.newsBrand.findUnique as jest.Mock).mockResolvedValue({ id: validBody.brandId });
+      (db.template.findUnique as jest.Mock).mockResolvedValue({ id: validBody.templateId });
+      (AIService.generateArticle as jest.Mock).mockRejectedValue(new Error('AI Service Error'));
+
+      await ArticleController.generateArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to generate article' });
+    });
   });
 
   describe('createArticle', () => {
@@ -158,6 +170,16 @@ describe('ArticleController', () => {
 
       expect(res.status).toHaveBeenCalledWith(400);
     });
+
+    it('should handle database errors', async () => {
+      req.body = validBody;
+      (db.article.create as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.createArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to create article' });
+    });
   });
 
   describe('getArticle', () => {
@@ -179,6 +201,16 @@ describe('ArticleController', () => {
 
       expect(res.status).toHaveBeenCalledWith(404);
     });
+
+    it('should handle database errors', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.getArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to get article' });
+    });
   });
 
   describe('listArticles', () => {
@@ -194,6 +226,42 @@ describe('ArticleController', () => {
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
         pagination: expect.any(Object)
       }));
+    });
+
+    it('should filter articles by brandId, language, category, status, and authorId', async () => {
+      req.query = {
+        brandId: 'brand-123',
+        language: 'en',
+        category: 'Tech',
+        status: 'published',
+        authorId: 'user-123',
+        page: '1',
+        limit: '10'
+      };
+      (db.article.findMany as jest.Mock).mockResolvedValue([]);
+      (db.article.count as jest.Mock).mockResolvedValue(0);
+
+      await ArticleController.listArticles(req as Request, res as Response);
+
+      expect(db.article.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({
+          brandId: 'brand-123',
+          language: 'en',
+          category: 'Tech',
+          status: 'published',
+          authorId: 'user-123'
+        })
+      }));
+    });
+
+    it('should handle database errors', async () => {
+      req.query = { page: '1', limit: '10' };
+      (db.article.findMany as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.listArticles(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to list articles' });
     });
   });
 
@@ -245,6 +313,53 @@ describe('ArticleController', () => {
 
       expect(res.status).toHaveBeenCalledWith(404);
     });
+
+    it('should allow admin to update any article', async () => {
+      req.params = { id: 'article-123' };
+      req.body = updateBody;
+      req.user = { ...mockUser, role: 'admin' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'other-user', title: 'Old Title' });
+      (db.article.update as jest.Mock).mockResolvedValue({ id: 'article-123', ...updateBody });
+
+      await ArticleController.updateArticle(req as Request, res as Response);
+
+      expect(db.article.update).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it('should allow super_admin to update any article', async () => {
+      req.params = { id: 'article-123' };
+      req.body = updateBody;
+      req.user = { ...mockUser, role: 'super_admin' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'other-user', title: 'Old Title' });
+      (db.article.update as jest.Mock).mockResolvedValue({ id: 'article-123', ...updateBody });
+
+      await ArticleController.updateArticle(req as Request, res as Response);
+
+      expect(db.article.update).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it('should handle validation errors', async () => {
+      req.params = { id: 'article-123' };
+      req.body = { status: 'invalid_status' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'user-123' });
+
+      await ArticleController.updateArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+
+    it('should handle database errors', async () => {
+      req.params = { id: 'article-123' };
+      req.body = updateBody;
+      (db.article.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.updateArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to update article' });
+    });
   });
 
   describe('deleteArticle', () => {
@@ -266,6 +381,37 @@ describe('ArticleController', () => {
 
       expect(res.status).toHaveBeenCalledWith(403);
     });
+
+    it('should return 404 if not found', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue(null);
+
+      await ArticleController.deleteArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it('should allow admin to delete any article', async () => {
+      req.params = { id: 'article-123' };
+      req.user = { ...mockUser, role: 'admin' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'other-user' });
+      (db.article.delete as jest.Mock).mockResolvedValue({ id: 'article-123' });
+
+      await ArticleController.deleteArticle(req as Request, res as Response);
+
+      expect(db.article.delete).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it('should handle database errors', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.deleteArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to delete article' });
+    });
   });
 
   describe('publishArticle', () => {
@@ -280,6 +426,46 @@ describe('ArticleController', () => {
         data: expect.objectContaining({ status: 'published' })
       }));
       expect(res.json).toHaveBeenCalled();
+    });
+
+    it('should return 404 if article not found', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue(null);
+
+      await ArticleController.publishArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it('should return 403 if unauthorized', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'other-user' });
+
+      await ArticleController.publishArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(403);
+    });
+
+    it('should allow admin to publish any article', async () => {
+      req.params = { id: 'article-123' };
+      req.user = { ...mockUser, role: 'admin' };
+      (db.article.findUnique as jest.Mock).mockResolvedValue({ id: 'article-123', authorId: 'other-user' });
+      (db.article.update as jest.Mock).mockResolvedValue({ id: 'article-123', status: 'published' });
+
+      await ArticleController.publishArticle(req as Request, res as Response);
+
+      expect(db.article.update).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    it('should handle database errors', async () => {
+      req.params = { id: 'article-123' };
+      (db.article.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await ArticleController.publishArticle(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(json).toHaveBeenCalledWith({ error: 'Failed to publish article' });
     });
   });
 });

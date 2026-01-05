@@ -57,6 +57,15 @@ describe('TemplateController', () => {
       await TemplateController.createTemplate(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(400);
     });
+
+    it('should handle service errors', async () => {
+      req.body = validBody;
+      (TemplateService.createTemplate as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await TemplateController.createTemplate(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 
   describe('getTemplate', () => {
@@ -76,6 +85,15 @@ describe('TemplateController', () => {
       await TemplateController.getTemplate(req as Request, res as Response);
 
       expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      (TemplateService.getTemplate as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await TemplateController.getTemplate(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 
@@ -108,6 +126,16 @@ describe('TemplateController', () => {
       await TemplateController.updateTemplate(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(403);
     });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      req.body = { name: 'New' };
+      (TemplateService.updateTemplate as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await TemplateController.updateTemplate(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 
   describe('deleteTemplate', () => {
@@ -125,6 +153,16 @@ describe('TemplateController', () => {
       req.user = mockUser;
       await TemplateController.deleteTemplate(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(403);
+    });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      req.user = { role: 'super_admin' };
+      (TemplateService.deleteTemplate as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await TemplateController.deleteTemplate(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 
@@ -145,6 +183,15 @@ describe('TemplateController', () => {
       req.user = mockUser;
       await TemplateController.extractTemplate(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(403);
+    });
+
+    it('should handle service errors', async () => {
+      req.body = extractBody;
+      (TemplateService.extractFromUrl as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await TemplateController.extractTemplate(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 });
