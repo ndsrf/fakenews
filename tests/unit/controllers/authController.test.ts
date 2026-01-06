@@ -166,7 +166,7 @@ describe('Auth Controller', () => {
 
     it('should return 401 if password is invalid', async () => {
       req.body = validLoginData;
-      
+
       const mockUser = {
         id: '1',
         email: validLoginData.email,
@@ -176,6 +176,16 @@ describe('Auth Controller', () => {
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false); // Invalid password
+
+      await login(req as Request, res as Response);
+
+      expect(mockStatus).toHaveBeenCalledWith(401);
+      expect(mockJson).toHaveBeenCalledWith({ error: 'Invalid email or password' });
+    });
+
+    it('should return 401 if user does not exist', async () => {
+      req.body = validLoginData;
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       await login(req as Request, res as Response);
 
@@ -201,6 +211,16 @@ describe('Auth Controller', () => {
       req.user = undefined;
       await getCurrentUser(req as Request, res as Response);
       expect(mockStatus).toHaveBeenCalledWith(401);
+    });
+
+    it('should return 404 if user not found', async () => {
+      req.user = { userId: '1', email: 'test@test.com', role: 'user' };
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      await getCurrentUser(req as Request, res as Response);
+
+      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockJson).toHaveBeenCalledWith({ error: 'User not found' });
     });
   });
 });

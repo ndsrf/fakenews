@@ -59,6 +59,15 @@ describe('BrandController', () => {
       await BrandController.createBrand(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(400);
     });
+
+    it('should handle service errors', async () => {
+      req.body = validBody;
+      (BrandService.createBrand as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await BrandController.createBrand(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 
   describe('getBrand', () => {
@@ -78,6 +87,15 @@ describe('BrandController', () => {
       await BrandController.getBrand(req as Request, res as Response);
 
       expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      (BrandService.getBrand as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await BrandController.getBrand(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 
@@ -112,6 +130,16 @@ describe('BrandController', () => {
       await BrandController.updateBrand(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(403);
     });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      req.body = updateBody;
+      (BrandService.updateBrand as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await BrandController.updateBrand(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 
   describe('deleteBrand', () => {
@@ -129,6 +157,16 @@ describe('BrandController', () => {
       req.user = mockUser;
       await BrandController.deleteBrand(req as Request, res as Response);
       expect(res.status).toHaveBeenCalledWith(403);
+    });
+
+    it('should handle service errors', async () => {
+      req.params = { id: '1' };
+      req.user = { role: 'super_admin' };
+      (BrandService.deleteBrand as jest.Mock).mockRejectedValue(new Error('Service error'));
+
+      await BrandController.deleteBrand(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 
